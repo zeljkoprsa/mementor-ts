@@ -68,30 +68,30 @@ docs/
 
 ```bash
 # Create a new snapshot
-mementor snapshot
+npx mementor snapshot
 
 # Watch for changes and create snapshots automatically
-mementor watch
+npx mementor watch
 ```
 
 ### Organize Snapshots
 
 ```bash
 # Clean up and organize snapshots into year/month/day structure
-mementor cleanup
+npx mementor cleanup
 ```
 
 ### Compare Snapshots
 
 ```bash
 # Compare latest snapshots
-mementor compare
+npx mementor compare
 
 # Compare snapshots from a specific date
-mementor compare --date 2025-02-07
+npx mementor compare --date 2025-02-07
 
 # Compare specific snapshots
-mementor compare --old snapshots/old.md --new snapshots/new.md
+npx mementor compare --old snapshots/old.md --new snapshots/new.md
 ```
 
 ## Documentation Structure
