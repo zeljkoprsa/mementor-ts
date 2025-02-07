@@ -7,7 +7,7 @@ import { SnapshotGenerator } from '../services/snapshotGenerator';
 async function ensureDirectory(dir: string): Promise<void> {
   try {
     await fs.mkdir(dir, { recursive: true });
-    console.log(`✓ Created directory: ${dir}`);
+    console.warn(`✓ Created directory: ${dir}`);
   } catch (error) {
     if (error instanceof Error) {
       console.error(`Failed to create directory ${dir}:`, error.message);
@@ -20,13 +20,13 @@ async function createFromTemplate(
   renderer: TemplateRenderer,
   templateName: string,
   targetPath: string,
-  data: TemplateData
+  data: TemplateData,
 ): Promise<void> {
   try {
     // Check if file exists
     try {
       await fs.access(targetPath);
-      console.log(`⚠️  File ${templateName} already exists, skipping...`);
+      console.warn(`⚠️  File ${templateName} already exists, skipping...`);
       return;
     } catch {
       // File doesn't exist, proceed with creation
@@ -34,7 +34,7 @@ async function createFromTemplate(
 
     const content = await renderer.renderTemplate(templateName, data);
     await fs.writeFile(targetPath, content);
-    console.log(`✓ Created ${templateName}`);
+    console.warn(`✓ Created ${templateName}`);
   } catch (error) {
     if (error instanceof Error) {
       console.error(`Failed to create ${templateName}:`, error.message);
@@ -43,7 +43,7 @@ async function createFromTemplate(
   }
 }
 
-async function initializeTemplates(config: ProjectConfig): Promise<void> {
+async function initializeTemplates(_config: ProjectConfig): Promise<void> {
   try {
     // Create required directories
     const docsDir = path.join(process.cwd(), 'docs/context');
@@ -64,16 +64,12 @@ async function initializeTemplates(config: ProjectConfig): Promise<void> {
       next_steps: [],
       focus_areas: [],
       issues: [],
-      env_items: [
-        'Node.js',
-        'TypeScript',
-        'Git'
-      ]
+      env_items: ['Node.js', 'TypeScript', 'Git'],
     };
 
     // Get list of available templates
     const templates = await renderer.listTemplates();
-    console.log('Found templates:', templates);
+    console.warn('Found templates:', templates);
 
     // Create each template in the project
     for (const template of templates) {
@@ -99,7 +95,7 @@ export async function initializeProject(config: ProjectConfig): Promise<void> {
     const snapshotsDir = path.join(docsDir, 'snapshots');
     await generator.createSnapshot(path.join(docsDir, 'active_context.md'), snapshotsDir);
 
-    console.log('\n✨ Project initialized successfully!');
+    console.warn('\n✨ Project initialized successfully!');
   } catch (error) {
     if (error instanceof Error) {
       console.error('Failed to initialize project:', error.message);

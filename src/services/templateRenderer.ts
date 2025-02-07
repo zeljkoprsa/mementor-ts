@@ -81,7 +81,7 @@ export class TemplateRenderer {
       `Created: ${metadata.created_at}`,
       `Updated: ${metadata.updated_at}`,
       '',
-      'Dependencies:'
+      'Dependencies:',
     ];
 
     metadata.dependencies.forEach(dep => {
@@ -90,7 +90,8 @@ export class TemplateRenderer {
 
     if (metadata.health_metrics) {
       const m = metadata.health_metrics;
-      header.push('',
+      header.push(
+        '',
         'Health Metrics:',
         `- Word Count: ${m.word_count}`,
         `- Reading Time: ${m.reading_time} minutes`,
@@ -98,7 +99,7 @@ export class TemplateRenderer {
         `- Completion: ${m.completion_percentage}%`,
         `- Sections: ${m.section_count}`,
         `- Code Blocks: ${m.code_blocks}`,
-        `- Days Since Last Snapshot: ${m.last_snapshot_delta}`
+        `- Days Since Last Snapshot: ${m.last_snapshot_delta}`,
       );
     }
 
@@ -111,12 +112,12 @@ export class TemplateRenderer {
 
   async createSnapshot(templateName: string, data: TemplateData): Promise<string> {
     const content = await this.renderTemplate(templateName, data);
-    
+
     if (data.metadata) {
       const header = this.generateMetadataHeader(data.metadata);
       return `${header}\n\n---\n\n${content}`;
     }
-    
+
     return content;
   }
 
@@ -124,7 +125,7 @@ export class TemplateRenderer {
     try {
       const templatePath = path.join(this.templateDir, `${templateName}.mustache`);
       const template = await fs.readFile(templatePath, 'utf-8');
-      
+
       // Add default values
       const defaultData = {
         decision_date: new Date().toISOString().split('T')[0],
@@ -135,8 +136,8 @@ export class TemplateRenderer {
           todo_count: 0,
           completion_percentage: 0,
           section_count: 0,
-          code_blocks: 0
-        }
+          code_blocks: 0,
+        },
       };
 
       // Merge default data with provided data

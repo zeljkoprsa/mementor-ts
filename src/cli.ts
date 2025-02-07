@@ -31,13 +31,13 @@ async function loadOrCreateConfig(): Promise<ProjectConfig> {
       git: {
         enabled: true,
         autoCommit: true,
-        commitPrefix: 'docs'
+        commitPrefix: 'docs',
       },
       features: {
         autoSnapshot: true,
         liveUpdate: true,
-        gitHooks: true
-      }
+        gitHooks: true,
+      },
     };
   }
 }
@@ -54,15 +54,12 @@ program
       await fs.mkdir(config.templatesDir, { recursive: true });
 
       // Save config
-      await fs.writeFile(
-        'mementor.json',
-        JSON.stringify(config, null, 2)
-      );
+      await fs.writeFile('mementor.json', JSON.stringify(config, null, 2));
 
       // Initialize the project
       await initializeProject(config);
 
-      console.log('✨ Mementor initialized successfully!');
+      console.warn('✨ Mementor initialized successfully!');
     } catch (error) {
       console.error('Error initializing Mementor:', error);
       process.exit(1);
@@ -80,7 +77,7 @@ program
       const watcher = new ProjectWatcher(config);
       await watcher.start();
 
-      console.log('👀 Watching for changes...');
+      console.warn('👀 Watching for changes...');
     } catch (error) {
       console.error('Error starting watcher:', error);
       process.exit(1);
@@ -94,7 +91,7 @@ program
     try {
       const config = await loadOrCreateConfig();
       await handleSnapshotCommand(config);
-      console.log('📸 Snapshot created successfully!');
+      console.warn('📸 Snapshot created successfully!');
     } catch (error) {
       console.error('Failed to create snapshot:', error);
       process.exit(1);
@@ -119,15 +116,10 @@ program
   .option('-d, --date <date>', 'Compare snapshots from a specific date (YYYY-MM-DD)')
   .option('-o, --old <snapshot>', 'Old snapshot filename')
   .option('-n, --new <snapshot>', 'New snapshot filename')
-  .action(async (options) => {
+  .action(async options => {
     try {
       const config = await loadOrCreateConfig();
-      await handleCompareCommand(
-        config,
-        options.date,
-        options.old,
-        options.new
-      );
+      await handleCompareCommand(config, options.date, options.old, options.new);
     } catch (error) {
       console.error('Failed to compare snapshots:', error);
       process.exit(1);

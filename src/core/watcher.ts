@@ -2,7 +2,6 @@ import * as chokidar from 'chokidar';
 import { ProjectConfig } from '../types';
 import { generateSnapshot } from './snapshot';
 import { updateDocumentation } from './documentation';
-import path from 'path';
 
 interface FileHandler {
   (filepath: string): Promise<void>;
@@ -11,15 +10,12 @@ interface FileHandler {
 export class ProjectWatcher {
   private watcher: chokidar.FSWatcher;
   private config: ProjectConfig;
-  private readonly watchPatterns = [
-    '**/*.{ts,tsx,js,jsx}',
-    'docs/context/*.md'
-  ];
+  private readonly watchPatterns = ['**/*.{ts,tsx,js,jsx}', 'docs/context/*.md'];
   private readonly ignoredPatterns = [
     '**/node_modules/**',
     '**/dist/**',
     '**/build/**',
-    '**/.git/**'
+    '**/.git/**',
   ];
 
   constructor(config: ProjectConfig) {
@@ -30,20 +26,20 @@ export class ProjectWatcher {
       ignoreInitial: true,
       awaitWriteFinish: {
         stabilityThreshold: 300,
-        pollInterval: 100
-      }
+        pollInterval: 100,
+      },
     });
 
     this.setupWatchers();
   }
 
   private handleFileChange: FileHandler = async (filepath: string): Promise<void> => {
-    console.log(`File ${filepath} has been changed`);
-    
+    console.warn(`File ${filepath} has been changed`);
+
     try {
       const snapshot = await generateSnapshot(this.config);
       await updateDocumentation(filepath, snapshot, this.config);
-      
+
       if (this.config.git.enabled && this.config.git.autoCommit) {
         // Git operations will be handled by git.ts
       }
@@ -57,12 +53,12 @@ export class ProjectWatcher {
   };
 
   private handleFileAdd: FileHandler = async (filepath: string): Promise<void> => {
-    console.log(`File ${filepath} has been added`);
+    console.warn(`File ${filepath} has been added`);
     await this.handleFileChange(filepath);
   };
 
   private handleFileDelete: FileHandler = async (filepath: string): Promise<void> => {
-    console.log(`File ${filepath} has been removed`);
+    console.warn(`File ${filepath} has been removed`);
     try {
       const snapshot = await generateSnapshot(this.config);
       await updateDocumentation(filepath, snapshot, this.config);
@@ -90,12 +86,12 @@ export class ProjectWatcher {
   }
 
   public async start(): Promise<void> {
-    console.log('Starting project watcher...');
+    console.warn('Starting project watcher...');
     try {
       // Wait for initial scan to complete
-      await new Promise<void>((resolve) => {
+      await new Promise<void>(resolve => {
         this.watcher.on('ready', () => {
-          console.log('Watcher ready, monitoring for changes...');
+          console.warn('Watcher ready, monitoring for changes...');
           resolve();
         });
       });
@@ -108,10 +104,10 @@ export class ProjectWatcher {
   }
 
   public async stop(): Promise<void> {
-    console.log('Stopping project watcher...');
+    console.warn('Stopping project watcher...');
     try {
       await this.watcher.close();
-      console.log('Watcher stopped successfully');
+      console.warn('Watcher stopped successfully');
     } catch (error) {
       if (error instanceof Error) {
         console.error('Failed to stop watcher:', error.message);

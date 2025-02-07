@@ -1,6 +1,11 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { TemplateRenderer, TemplateData, DocumentationMetadata, HealthMetrics } from './templateRenderer';
+import {
+  TemplateRenderer,
+  TemplateData,
+  DocumentationMetadata,
+  HealthMetrics,
+} from './templateRenderer';
 
 export class SnapshotGenerator {
   private renderer: TemplateRenderer;
@@ -27,11 +32,13 @@ export class SnapshotGenerator {
       broken_links: [],
       completion_percentage: todos > 0 ? (completedTodos / todos) * 100 : 100,
       section_count: sections,
-      section_depth: Math.max(...(content.match(/^(#{1,6})\s/gm)?.map(h => h.trim().length) || [0])),
+      section_depth: Math.max(
+        ...(content.match(/^(#{1,6})\s/gm)?.map(h => h.trim().length) || [0]),
+      ),
       code_blocks: codeBlocks,
       avg_section_length: sections > 0 ? words / sections : words,
       readability_score: 0, // TODO: Implement readability calculation
-      last_snapshot_delta: 0 // Will be calculated when creating snapshot
+      last_snapshot_delta: 0, // Will be calculated when creating snapshot
     };
   }
 
@@ -46,17 +53,17 @@ export class SnapshotGenerator {
           .map(async f => {
             const stat = await fs.stat(path.join(snapshotsDir, f));
             return { name: f, mtime: stat.mtime };
-          })
+          }),
       );
 
       if (snapshots.length === 0) return 0;
 
-      const latestSnapshot = snapshots.reduce((latest, current) => 
-        current.mtime > latest.mtime ? current : latest
+      const latestSnapshot = snapshots.reduce((latest, current) =>
+        current.mtime > latest.mtime ? current : latest,
       );
 
       const daysSinceLastSnapshot = Math.floor(
-        (Date.now() - latestSnapshot.mtime.getTime()) / (1000 * 60 * 60 * 24)
+        (Date.now() - latestSnapshot.mtime.getTime()) / (1000 * 60 * 60 * 24),
       );
 
       return daysSinceLastSnapshot;
@@ -89,7 +96,7 @@ export class SnapshotGenerator {
 
       // Calculate health metrics
       const healthMetrics = await this.calculateHealthMetrics(docPath);
-      
+
       // Update last snapshot delta
       healthMetrics.last_snapshot_delta = await this.getLastSnapshotDelta(outputDir);
 
@@ -98,11 +105,9 @@ export class SnapshotGenerator {
         version: '1.0.0',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
-        dependencies: [
-          { name: 'mementor-ts', version: '1.0.0' }
-        ],
+        dependencies: [{ name: 'mementor-ts', version: '1.0.0' }],
         health_metrics: healthMetrics,
-        tags: ['documentation', 'snapshot']
+        tags: ['documentation', 'snapshot'],
       };
 
       // Prepare template data
@@ -112,7 +117,7 @@ export class SnapshotGenerator {
         changes: [
           'Updated template system',
           'Added metadata support',
-          'Implemented snapshot generation'
+          'Implemented snapshot generation',
         ],
         state_items: [
           {
@@ -120,31 +125,31 @@ export class SnapshotGenerator {
             items: [
               { description: 'Template system', completed: true },
               { description: 'Metadata support', completed: true },
-              { description: 'Snapshot generation', completed: true }
-            ]
-          }
+              { description: 'Snapshot generation', completed: true },
+            ],
+          },
         ],
         next_actions: [
           'Implement automated snapshot scheduling',
           'Add more comprehensive health metrics',
-          'Create snapshot comparison tools'
+          'Create snapshot comparison tools',
         ],
-        metadata
+        metadata,
       };
 
       // Generate snapshot
       const content = await this.renderer.createSnapshot('snapshot', data);
-      
+
       // Create organized directory structure
       const now = new Date();
       const snapshotDir = await this.ensureSnapshotDirectory(outputDir, now);
-      
+
       // Format time for filename (HHMMSS)
       const timeStr = now.toTimeString().split(' ')[0].replace(/:/g, '');
       const outputPath = path.join(snapshotDir, `snapshot_${timeStr}.md`);
       await fs.writeFile(outputPath, content);
-      
-      console.log(`✨ Created snapshot: ${outputPath}`);
+
+      console.warn(`✨ Created snapshot: ${outputPath}`);
     } catch (error) {
       if (error instanceof Error) {
         console.error('Failed to create snapshot:', error.message);

@@ -14,16 +14,19 @@ A powerful documentation management tool that helps you maintain living document
 ## Installation
 
 ### Global Installation
+
 ```bash
 npm install -g mementor-ts
 ```
 
 ### Local Project Installation
+
 ```bash
 npm install --save-dev mementor-ts
 ```
 
 ### Development Setup
+
 ```bash
 # Clone the repository
 git clone https://github.com/your-username/mementor-ts.git
@@ -39,10 +42,13 @@ npm run build
 ## Usage
 
 ### Initialize a Project
+
 ```bash
 mementor init
 ```
+
 This creates the initial documentation structure:
+
 ```
 docs/
 └── context/
@@ -54,6 +60,7 @@ docs/
 ```
 
 ### Create Snapshots
+
 ```bash
 # Create a new snapshot
 mementor snapshot
@@ -63,12 +70,14 @@ mementor watch
 ```
 
 ### Organize Snapshots
+
 ```bash
 # Clean up and organize snapshots into year/month/day structure
 mementor cleanup
 ```
 
 ### Compare Snapshots
+
 ```bash
 # Compare latest snapshots
 mementor compare
@@ -83,6 +92,7 @@ mementor compare --old snapshots/old.md --new snapshots/new.md
 ## Documentation Structure
 
 ### 1. Active Context (`active_context.md`)
+
 - Current focus areas
 - Recent decisions
 - Known issues
@@ -90,18 +100,21 @@ mementor compare --old snapshots/old.md --new snapshots/new.md
 - Next steps
 
 ### 2. Technical Context (`tech_context.md`)
+
 - Technology stack
 - External dependencies
 - Infrastructure setup
 - Security measures
 
 ### 3. System Patterns (`system_patterns.md`)
+
 - Architectural patterns
 - Design patterns
 - Code style patterns
 - Testing patterns
 
 ### 4. Product Brief (`product_brief.md`)
+
 - Product overview
 - Target audience
 - Core features
@@ -110,6 +123,7 @@ mementor compare --old snapshots/old.md --new snapshots/new.md
 ## Health Metrics
 
 Mementor tracks various documentation health metrics:
+
 - Word count and reading time
 - Completion percentage
 - Number of sections and code blocks
@@ -168,6 +182,7 @@ We welcome contributions! Here's how you can help:
 ### Commit Message Format
 
 Follow the [Conventional Commits](https://www.conventionalcommits.org/) specification:
+
 - `feat:` New features
 - `fix:` Bug fixes
 - `docs:` Documentation changes

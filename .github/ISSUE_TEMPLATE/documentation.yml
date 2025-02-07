@@ -1,0 +1,32 @@
+name: 📚 Documentation
+description: Report an issue with documentation
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a documentation issue!
+
+  - type: input
+    id: location
+    attributes:
+      label: Documentation Location
+      description: Link to or path of the documentation that needs attention
+      placeholder: e.g., README.md or https://github.com/...
+    validations:
+      required: true
+
+  - type: textarea
+    id: issue
+    attributes:
+      label: Issue Description
+      description: Describe what's wrong or missing in the documentation
+      placeholder: The documentation is unclear about...
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested Changes
+      description: If you have specific suggestions for improvements, detail them here
+      placeholder: This section could be improved by...
