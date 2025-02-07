@@ -1,6 +1,6 @@
 {
   "name": "mementor-ts",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A powerful documentation management tool that helps you maintain living documentation for your projects",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
