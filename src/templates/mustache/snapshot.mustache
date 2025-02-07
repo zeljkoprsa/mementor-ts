@@ -1,0 +1,23 @@
+{{! templates/snapshot.mustache }}
+# {{ title }}
+
+## Overview
+{{ description }}
+
+## Changes Since Last Snapshot
+{{#changes}}
+- {{ . }}
+{{/changes}}
+
+## Current State
+{{#state_items}}
+### {{ category }}
+{{#items}}
+- [{{#completed}}X{{/completed}}{{^completed}} {{/completed}}] {{ description }}
+{{/items}}
+{{/state_items}}
+
+## Next Actions
+{{#next_actions}}
+- {{ . }}
+{{/next_actions}}
