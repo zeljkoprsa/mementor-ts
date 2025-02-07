@@ -1,25 +1,60 @@
 {
   "name": "mementor-ts",
-  "version": "1.0.0",
-  "main": "index.js",
-  "bin": "./bin/mementor",
+  "version": "0.1.0",
+  "description": "A powerful documentation management tool that helps you maintain living documentation for your projects",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "mementor": "./dist/cli.js"
+  },
   "scripts": {
     "test": "jest",
     "build": "tsc && cp -r src/templates/mustache dist/templates/",
     "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/cli.ts",
     "start": "node dist/cli.js",
     "lint": "eslint . --ext .ts,.tsx",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "prepublishOnly": "npm run build"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "files": [
+    "dist",
+    "bin",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "documentation",
+    "typescript",
+    "cli",
+    "documentation-tool",
+    "documentation-generator",
+    "living-documentation"
+  ],
+  "author": "Željko Prša <zeljko.prsa@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zeljkoprsa/mementor-ts.git"
+  },
+  "bugs": {
+    "url": "https://github.com/zeljkoprsa/mementor-ts/issues"
+  },
+  "homepage": "https://github.com/zeljkoprsa/mementor-ts#readme",
+  "dependencies": {
+    "chokidar": "^4.0.3",
+    "commander": "^13.1.0",
+    "front-matter": "^4.0.2",
+    "glob": "^11.0.1",
+    "marked": "^15.0.6",
+    "mustache": "^4.2.0",
+    "simple-git": "^3.27.0"
+  },
   "devDependencies": {
     "@commitlint/cli": "^19.7.1",
     "@commitlint/config-conventional": "^19.7.1",
     "@eslint/js": "^9.19.0",
     "@types/jest": "^29.5.14",
+    "@types/mustache": "^4.2.5",
     "@types/node": "^22.13.1",
     "@typescript-eslint/eslint-plugin": "^8.23.0",
     "@typescript-eslint/parser": "^8.23.0",
@@ -34,15 +69,5 @@
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.3"
-  },
-  "dependencies": {
-    "@types/mustache": "^4.2.5",
-    "chokidar": "^4.0.3",
-    "commander": "^13.1.0",
-    "front-matter": "^4.0.2",
-    "glob": "^11.0.1",
-    "marked": "^15.0.6",
-    "mustache": "^4.2.0",
-    "simple-git": "^3.27.0"
   }
 }
