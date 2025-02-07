@@ -13,6 +13,11 @@ A powerful documentation management tool that helps you maintain living document
 
 ## Installation
 
+### Requirements
+
+- Node.js >= 16.0.0
+- npm >= 7.0.0
+
 ### Global Installation
 
 ```bash
@@ -29,7 +34,7 @@ npm install --save-dev mementor-ts
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/mementor-ts.git
+git clone https://github.com/zeljkoprsa/mementor-ts.git
 
 # Install dependencies
 cd mementor-ts
@@ -91,45 +96,50 @@ mementor compare --old snapshots/old.md --new snapshots/new.md
 
 ## Documentation Structure
 
-### 1. Active Context (`active_context.md`)
+Mementor-ts provides a flexible documentation structure that you can customize to your needs. Here's a suggested structure:
 
-- Current focus areas
-- Recent decisions
-- Known issues
-- Development environment
-- Next steps
+### 1. Active Context
 
-### 2. Technical Context (`tech_context.md`)
+- Current focus areas and development status
+- Recent architectural decisions
+- Known issues and limitations
+- Development environment setup
+- Planned next steps
 
-- Technology stack
+### 2. Technical Documentation
+
+- Architecture overview
+- Technology stack details
 - External dependencies
 - Infrastructure setup
-- Security measures
+- Security considerations
 
-### 3. System Patterns (`system_patterns.md`)
+### 3. Development Guidelines
 
-- Architectural patterns
-- Design patterns
-- Code style patterns
-- Testing patterns
+- Coding standards
+- Design patterns in use
+- Testing strategy
+- CI/CD workflow
 
-### 4. Product Brief (`product_brief.md`)
+### 4. Project Information
 
-- Product overview
-- Target audience
-- Core features
-- Timeline and constraints
+- Project overview
+- Getting started guide
+- Contributing guidelines
+- Release notes
+
+You can customize this structure by modifying the templates in your project's configuration.
 
 ## Health Metrics
 
-Mementor tracks various documentation health metrics:
+Mementor-ts tracks various documentation health metrics to help you maintain high-quality documentation:
 
-- Word count and reading time
-- Completion percentage
-- Number of sections and code blocks
-- TODOs and action items
-- Days since last update
-- Broken links detection
+- Documentation coverage and completeness
+- Update frequency and freshness
+- Content structure analysis
+- Code example coverage
+- Change frequency patterns
+- Documentation size metrics
 
 ## Contributing
 
@@ -195,14 +205,16 @@ MIT License - see [LICENSE](LICENSE) for details
 
 ## Support
 
-- GitHub Issues: [Report bugs or request features](https://github.com/your-username/mementor-ts/issues)
-- Documentation: [Full documentation](https://github.com/your-username/mementor-ts/wiki)
+- GitHub Issues: [Report bugs or request features](https://github.com/zeljkoprsa/mementor-ts/issues)
+- Documentation: Check the `docs` directory in the repository for detailed documentation
 
 ## Roadmap
 
-- [ ] Automated snapshot scheduling
-- [ ] Enhanced metric analysis
-- [ ] Integration with CI/CD pipelines
-- [ ] Custom template support
-- [ ] Documentation quality scoring
-- [ ] Multi-language support
+- [ ] Enhanced documentation health metrics
+- [ ] Automated documentation testing in CI/CD
+- [ ] Custom documentation templates
+- [ ] Documentation quality scoring system
+- [ ] Integration with popular documentation platforms
+- [ ] Real-time collaboration features
+- [ ] Documentation impact analysis
+- [ ] AI-powered documentation suggestions
