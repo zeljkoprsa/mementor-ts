@@ -10,6 +10,9 @@ A powerful documentation management tool that helps you maintain living document
 - 🔄 **Change Tracking**: Compare snapshots to see how documentation evolves
 - 📁 **Organized Storage**: Hierarchical storage of snapshots by year/month/day
 - 🔍 **Smart Comparison**: Intelligent diffing of documentation changes
+- 🤖 **AI Session Management**: Track and manage AI-assisted development sessions
+- 📝 **Context Tracking**: Automatically track decisions, code changes, and development context
+- 📊 **Session Analytics**: Monitor development progress and generate session summaries
 
 ## Installation
 
@@ -92,6 +95,83 @@ npx mementor compare --date 2025-02-07
 
 # Compare specific snapshots
 npx mementor compare --old snapshots/old.md --new snapshots/new.md
+```
+
+### AI Session Management
+
+Mementor-ts includes powerful AI session management features to help track and document AI-assisted development:
+
+```bash
+# Start a new AI development session
+npx mementor ai start --objective "Implementing new feature X"
+
+# Check current session status
+npx mementor ai status
+
+# End the current session
+npx mementor ai end
+
+# Restore a previous session
+npx mementor ai restore [session-id]
+
+# Archive old sessions
+npx mementor ai archive --older-than 30 --compress
+
+# Clean up old sessions
+npx mementor ai cleanup --older-than 90 --archive --ended-only
+```
+
+Session management features include:
+
+1. **Session Tracking**
+
+   - Automatic tracking of decisions and their rationale
+   - Code change monitoring with related decisions
+   - Task progress tracking with status updates
+
+2. **Context Management**
+
+   - Active file tracking
+   - Git context integration
+   - Environment and project state monitoring
+
+3. **Session Organization**
+
+   - Hierarchical storage by year/month
+   - Automatic session archiving
+   - Compressed storage options
+
+4. **Documentation Integration**
+   - Automatic context updates
+   - Session summaries generation
+   - Development timeline tracking
+
+## Configuration
+
+Mementor-ts can be configured using a `mementor.json` file in your project root:
+
+```json
+{
+  "docsDir": "docs",
+  "templatesDir": "docs/templates",
+  "gitIntegration": true
+}
+```
+
+### AI Session Configuration
+
+AI sessions can be configured with additional options:
+
+```json
+{
+  "ai": {
+    "enabled": true,
+    "trackingLevel": "standard",
+    "autoSnapshot": true,
+    "snapshotInterval": 3600,
+    "gitIntegration": true
+  }
+}
 ```
 
 ## Documentation Structure
@@ -217,4 +297,5 @@ MIT License - see [LICENSE](LICENSE) for details
 - [ ] Integration with popular documentation platforms
 - [ ] Real-time collaboration features
 - [ ] Documentation impact analysis
+- [x] AI session management and context tracking
 - [ ] AI-powered documentation suggestions
