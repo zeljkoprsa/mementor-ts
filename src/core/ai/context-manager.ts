@@ -399,20 +399,22 @@ Session ID: ${this.currentSession.sessionId}`,
   }
 
   private getSessionDuration(): string {
-    if (!this.currentSession) return '0 minutes';
+    if (!this.currentSession) return '0s';
 
     const start = new Date(this.currentSession.timestamp.start);
-    const end = this.currentSession.timestamp.end
-      ? new Date(this.currentSession.timestamp.end)
-      : new Date();
+    const end = new Date(this.currentSession.timestamp.end || new Date());
+    const durationMs = end.getTime() - start.getTime();
 
-    const minutes = Math.round((end.getTime() - start.getTime()) / 60000);
-    if (minutes < 60) {
-      return `${minutes} minutes`;
-    }
-    const hours = Math.floor(minutes / 60);
-    const remainingMinutes = minutes % 60;
-    return `${hours} hours ${remainingMinutes} minutes`;
+    const hours = Math.floor(durationMs / (1000 * 60 * 60));
+    const minutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((durationMs % (1000 * 60)) / 1000);
+
+    const parts = [];
+    if (hours > 0) parts.push(`${hours}h`);
+    if (minutes > 0) parts.push(`${minutes}m`);
+    if (seconds > 0 || parts.length === 0) parts.push(`${seconds}s`);
+
+    return parts.join(' ');
   }
 
   constructor(config: AISessionConfig) {

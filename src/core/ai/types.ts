@@ -67,6 +67,16 @@ export interface SessionMetadata {
   };
 }
 
+export interface SessionMetadata {
+  duration: string;
+  commitCount: number;
+  fileChanges: {
+    added: string[];
+    modified: string[];
+    deleted: string[];
+  };
+}
+
 export interface AISessionContext {
   sessionId: string;
   timestamp: {
@@ -90,6 +100,8 @@ export interface AISessionContext {
       uncommittedChanges: string[];
     };
   };
+  summary?: string;
+  metadata?: SessionMetadata;
   aiContext: {
     preferences: AIPreferences;
     memories: string[];
