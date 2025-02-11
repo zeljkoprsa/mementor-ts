@@ -1,0 +1,47 @@
+{
+  "sessionId": "f084f121-2639-4be4-b84d-80fcb99aa39a",
+  "timestamp": {
+    "start": "2025-02-11T15:08:25.123Z",
+    "lastActive": "2025-02-11T15:08:25.124Z",
+    "end": "2025-02-11T15:08:25.130Z"
+  },
+  "conversationState": {
+    "currentObjective": "",
+    "taskProgress": [],
+    "decisions": [],
+    "codeChanges": []
+  },
+  "projectState": {
+    "activeFiles": [],
+    "modifiedFiles": [],
+    "environmentContext": {},
+    "gitContext": {
+      "branch": "",
+      "lastCommit": "",
+      "uncommittedChanges": []
+    }
+  },
+  "aiContext": {
+    "preferences": {
+      "codeStyle": {
+        "formatting": [],
+        "conventions": [],
+        "documentation": []
+      },
+      "projectRules": [],
+      "constraints": []
+    },
+    "memories": [],
+    "previousSessions": []
+  },
+  "summary": "# AI Session Summary\n\nSession ID: f084f121-2639-4be4-b84d-80fcb99aa39a\nDuration: 0s\n\n## Objective\n\n\n## Accomplishments\n\n## Code Changes\n\n## Key Decisions",
+  "metadata": {
+    "duration": "0s",
+    "commitCount": 0,
+    "fileChanges": {
+      "added": [],
+      "modified": [],
+      "deleted": []
+    }
+  }
+}
