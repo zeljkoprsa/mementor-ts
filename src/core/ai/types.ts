@@ -57,6 +57,16 @@ export interface AIPreferences {
 /**
  * Represents the complete context of an AI development session
  */
+export interface SessionMetadata {
+  duration: string;
+  commitCount: number;
+  fileChanges: {
+    added: string[];
+    modified: string[];
+    deleted: string[];
+  };
+}
+
 export interface AISessionContext {
   sessionId: string;
   timestamp: {

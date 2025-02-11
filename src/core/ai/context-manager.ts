@@ -51,6 +51,24 @@ export class AIContextManager {
       throw new Error('No active session');
     }
 
+    // Update timestamps and state
+    this.currentSession.timestamp.end = new Date().toISOString();
+    this.currentSession.timestamp.lastActive = new Date().toISOString();
+
+    // Get final state
+    const [gitContext, activeFiles] = await Promise.all([
+      this.getGitContext(),
+      this.getActiveFiles(),
+    ]);
+
+    // Update final state
+    this.currentSession.projectState.gitContext = gitContext;
+    this.currentSession.projectState.activeFiles = activeFiles;
+    this.currentSession.projectState.modifiedFiles = gitContext.uncommittedChanges;
+
+    // Create final snapshot
+    await this.createSnapshot('manual');
+
     this.currentSession.timestamp.end = new Date().toISOString();
     if (archive) {
       await this.archiveSession();
@@ -109,6 +127,17 @@ Session ID: ${this.currentSession.sessionId}`,
    */
   private async archiveSession(): Promise<void> {
     if (!this.currentSession) return;
+
+    // Generate session summary
+    const summary = await this.generateSessionSummary();
+    this.currentSession.summary = summary;
+
+    // Add final metadata
+    this.currentSession.metadata = {
+      duration: this.getSessionDuration(),
+      commitCount: await this.getSessionCommitCount(),
+      fileChanges: await this.getSessionFileChanges(),
+    };
 
     const sessionPath = path.join(
       this.config.sessionsDirectory,
@@ -492,6 +521,47 @@ Session ID: ${this.currentSession.sessionId}`,
   /**
    * Updates the active context file with the current session state
    */
+  private async getSessionCommitCount(): Promise<number> {
+    if (!this.gitEnabled) return 0;
+
+    try {
+      const startTime = this.currentSession?.timestamp.start;
+      if (!startTime) return 0;
+
+      const log = await this.git.log({
+        from: new Date(startTime).toISOString(),
+        to: new Date().toISOString(),
+      });
+
+      return log.total;
+    } catch (error) {
+      console.error('Failed to get commit count:', error);
+      return 0;
+    }
+  }
+
+  private async getSessionFileChanges(): Promise<{
+    added: string[];
+    modified: string[];
+    deleted: string[];
+  }> {
+    if (!this.gitEnabled) {
+      return { added: [], modified: [], deleted: [] };
+    }
+
+    try {
+      const status = await this.git.status();
+      return {
+        added: status.created,
+        modified: status.modified,
+        deleted: status.deleted,
+      };
+    } catch (error) {
+      console.error('Failed to get file changes:', error);
+      return { added: [], modified: [], deleted: [] };
+    }
+  }
+
   private async getGitContext(): Promise<{
     branch: string;
     lastCommit: string;
