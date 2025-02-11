@@ -13,6 +13,16 @@ export class AIContextManager {
   private currentSession: AISessionContext | null = null;
   private config: AISessionConfig;
   private git = simpleGit();
+  private gitEnabled = false;
+
+  private async initGit(): Promise<void> {
+    try {
+      const isRepo = await this.git.checkIsRepo();
+      this.gitEnabled = isRepo;
+    } catch {
+      this.gitEnabled = false;
+    }
+  }
   private sessionFile: string;
 
   /**
@@ -381,8 +391,8 @@ Session ID: ${this.currentSession.sessionId}`,
     this.sessionFile = path.join(config.contextDirectory, '.current-session');
     this.currentSession = this.initializeSession();
 
-    // Try to restore existing session
-    this.tryRestoreSession();
+    // Initialize git and try to restore existing session
+    this.initGit().then(() => this.tryRestoreSession());
   }
 
   /**
@@ -482,6 +492,65 @@ Session ID: ${this.currentSession.sessionId}`,
   /**
    * Updates the active context file with the current session state
    */
+  private async getGitContext(): Promise<{
+    branch: string;
+    lastCommit: string;
+    uncommittedChanges: string[];
+  }> {
+    if (!this.gitEnabled) {
+      return {
+        branch: '',
+        lastCommit: '',
+        uncommittedChanges: [],
+      };
+    }
+
+    try {
+      const [branch, status, lastCommit] = await Promise.all([
+        this.git.branch(),
+        this.git.status(),
+        this.git.log({ maxCount: 1 }),
+      ]);
+
+      return {
+        branch: branch.current || '',
+        lastCommit: lastCommit.latest?.hash || '',
+        uncommittedChanges: [
+          ...status.modified,
+          ...status.created,
+          ...status.deleted,
+          ...status.renamed.map(r => r.to),
+        ],
+      };
+    } catch (error) {
+      console.error('Failed to get git context:', error);
+      return {
+        branch: '',
+        lastCommit: '',
+        uncommittedChanges: [],
+      };
+    }
+  }
+
+  private async getActiveFiles(): Promise<string[]> {
+    if (!this.currentSession) return [];
+
+    const activeFiles = new Set<string>();
+
+    // Add files from code changes
+    this.currentSession.conversationState.codeChanges.forEach(change => {
+      if (change.file) activeFiles.add(change.file);
+    });
+
+    // Add files from git context if available
+    if (this.gitEnabled) {
+      const { uncommittedChanges } = await this.getGitContext();
+      uncommittedChanges.forEach(file => activeFiles.add(file));
+    }
+
+    return Array.from(activeFiles);
+  }
+
   private async updateActiveContext(): Promise<void> {
     const contextPath = path.join(this.config.contextDirectory, 'active_context.md');
     const content = await this.formatContextMarkdown();
@@ -511,62 +580,89 @@ Session ID: ${this.currentSession.sessionId}`,
    * Formats the current session context as markdown
    */
   private async formatContextMarkdown(): Promise<string> {
-    if (!this.currentSession) {
-      throw new Error('No active session');
-    }
+    if (!this.currentSession) return '';
+
+    // Get latest git and file context
+    const [gitContext, activeFiles] = await Promise.all([
+      this.getGitContext(),
+      this.getActiveFiles(),
+    ]);
+
+    // Update session state
+    this.currentSession.projectState.gitContext = gitContext;
+    this.currentSession.projectState.activeFiles = activeFiles;
+    this.currentSession.projectState.modifiedFiles = gitContext.uncommittedChanges;
+
     const session = this.currentSession;
+    const duration = this.getSessionDuration();
 
     return `# AI Session Context
 Session ID: ${session.sessionId}
 Started: ${session.timestamp.start}
 Last Active: ${session.timestamp.lastActive}
+Duration: ${duration}
 
 ## Current Objective
-${session.conversationState.currentObjective}
+${session.conversationState.currentObjective || '(No objective set)'}
 
 ## Task Progress
-${session.conversationState.taskProgress
-  .map(
-    task => `- [${task.status === 'completed' ? 'x' : ' '}] ${task.description}
+${
+  session.conversationState.taskProgress.length > 0
+    ? session.conversationState.taskProgress
+        .map(
+          task => `- [${task.status === 'completed' ? 'x' : ' '}] ${task.description}
     Status: ${task.status}
     ${task.blockers ? `Blockers: ${task.blockers.join(', ')}` : ''}`,
-  )
-  .join('\n')}
+        )
+        .join('\n')
+    : '(No tasks recorded)'
+}
 
 ## Recent Decisions
-${session.conversationState.decisions
-  .map(
-    decision => `### ${decision.timestamp}
+${
+  session.conversationState.decisions.length > 0
+    ? session.conversationState.decisions
+        .map(
+          decision => `### ${decision.timestamp}
 - Context: ${decision.context}
 - Decision: ${decision.decision}
 - Rationale: ${decision.rationale}`,
-  )
-  .join('\n\n')}
+        )
+        .join('\n\n')
+    : '(No decisions recorded)'
+}
 
 ## Code Changes
-${session.conversationState.codeChanges
-  .map(
-    change => `- ${change.type}: ${change.file}
+${
+  session.conversationState.codeChanges.length > 0
+    ? session.conversationState.codeChanges
+        .map(
+          change => `- ${change.type}: ${change.file}
   Description: ${change.description}
   ${change.relatedDecision ? `Related Decision: ${change.relatedDecision}` : ''}`,
-  )
-  .join('\n')}
+        )
+        .join('\n')
+    : '(No code changes recorded)'
+}
 
 ## Project State
 Active Files:
-${session.projectState.activeFiles.map(file => `- ${file}`).join('\n')}
+${activeFiles.length > 0 ? activeFiles.map(file => `- ${file}`).join('\n') : '(No active files)'}
 
 Modified Files:
-${session.projectState.modifiedFiles.map(file => `- ${file}`).join('\n')}
+${
+  gitContext.uncommittedChanges.length > 0
+    ? gitContext.uncommittedChanges.map(file => `- ${file}`).join('\n')
+    : '(No modified files)'
+}
 
 Git Context:
-- Branch: ${session.projectState.gitContext.branch}
-- Last Commit: ${session.projectState.gitContext.lastCommit}
+- Branch: ${gitContext.branch || '(not in a git repository)'}
+- Last Commit: ${gitContext.lastCommit || '(no commits)'}
 ${
-  session.projectState.gitContext.uncommittedChanges.length > 0
-    ? `
-Uncommitted Changes:
-${session.projectState.gitContext.uncommittedChanges.map(change => `- ${change}`).join('\n')}`
+  gitContext.uncommittedChanges.length > 0
+    ? '\nUncommitted Changes:\n' +
+      gitContext.uncommittedChanges.map(change => `- ${change}`).join('\n')
     : ''
 }
 
