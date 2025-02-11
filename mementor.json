@@ -1,0 +1,5 @@
+{
+  "docsDir": "docs",
+  "templatesDir": "docs/templates",
+  "gitIntegration": true
+}

@@ -4,6 +4,13 @@ import fs from 'fs/promises';
 import path from 'path';
 import { simpleGit } from 'simple-git';
 
+/**
+ * Generates a new documentation snapshot based on current project state.
+ * @async
+ * @param {ProjectConfig} config - Project configuration
+ * @returns {Promise<ContextSnapshot>} Generated snapshot with current documentation state
+ * @throws {Error} When snapshot generation fails
+ */
 export async function generateSnapshot(config: ProjectConfig): Promise<ContextSnapshot> {
   const timestamp = new Date().toISOString();
   const git = simpleGit();
@@ -41,6 +48,13 @@ export async function generateSnapshot(config: ProjectConfig): Promise<ContextSn
   }
 }
 
+/**
+ * Generates a description of changes for a modified file.
+ * @async
+ * @param {string} file - Path to the modified file
+ * @returns {Promise<string>} Description of the changes
+ * @throws {Error} When git operations fail
+ */
 async function generateChangeDescription(file: string): Promise<string> {
   const git = simpleGit();
 
@@ -59,6 +73,13 @@ async function generateChangeDescription(file: string): Promise<string> {
   }
 }
 
+/**
+ * Retrieves the current state of all documentation files.
+ * @async
+ * @param {ProjectConfig} config - Project configuration
+ * @returns {Promise<DocumentContent[]>} Array of document contents
+ * @throws {Error} When reading documents fails
+ */
 async function getCurrentDocuments(config: ProjectConfig): Promise<DocumentContent[]> {
   const docsPattern = path.join(config.docsDir, '*.md');
   const docFiles = await glob(docsPattern);
@@ -79,6 +100,11 @@ async function getCurrentDocuments(config: ProjectConfig): Promise<DocumentConte
   );
 }
 
+/**
+ * Determines the type of documentation based on file path.
+ * @param {string} filepath - Path to the documentation file
+ * @returns {'architecture' | 'development' | 'changelog' | 'readme'} Document type
+ */
 function getDocType(filepath: string): 'architecture' | 'development' | 'changelog' | 'readme' {
   const filename = path.basename(filepath, '.md').toLowerCase();
 
@@ -88,6 +114,14 @@ function getDocType(filepath: string): 'architecture' | 'development' | 'changel
   return 'readme';
 }
 
+/**
+ * Saves a documentation snapshot to disk.
+ * @async
+ * @param {ContextSnapshot} snapshot - The snapshot to save
+ * @param {ProjectConfig} config - Project configuration
+ * @returns {Promise<void>}
+ * @throws {Error} When saving snapshot fails
+ */
 async function saveSnapshot(snapshot: ContextSnapshot, config: ProjectConfig): Promise<void> {
   const snapshotDir = path.join(
     config.docsDir,

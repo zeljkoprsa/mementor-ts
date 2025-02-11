@@ -3,10 +3,24 @@ import { ProjectConfig } from '../types';
 import { generateSnapshot } from './snapshot';
 import { updateDocumentation } from './documentation';
 
+/**
+ * Function type for handling file changes.
+ * @callback FileHandler
+ * @param {string} filepath - Path to the changed file
+ * @returns {Promise<void>}
+ */
 interface FileHandler {
   (filepath: string): Promise<void>;
 }
 
+/**
+ * Watches project files for changes and triggers documentation updates.
+ * @class ProjectWatcher
+ * @property {chokidar.FSWatcher} watcher - The file system watcher instance
+ * @property {ProjectConfig} config - Project configuration
+ * @property {string[]} watchPatterns - Glob patterns for files to watch
+ * @property {string[]} ignoredPatterns - Glob patterns for files to ignore
+ */
 export class ProjectWatcher {
   private watcher: chokidar.FSWatcher;
   private config: ProjectConfig;
@@ -18,6 +32,10 @@ export class ProjectWatcher {
     '**/.git/**',
   ];
 
+  /**
+   * Creates a new ProjectWatcher instance.
+   * @param {ProjectConfig} config - Project configuration
+   */
   constructor(config: ProjectConfig) {
     this.config = config;
     this.watcher = chokidar.watch(this.watchPatterns, {
@@ -33,6 +51,13 @@ export class ProjectWatcher {
     this.setupWatchers();
   }
 
+  /**
+   * Handles file changes by generating a new snapshot and updating documentation.
+   * @private
+   * @param {string} filepath - Path to the changed file
+   * @returns {Promise<void>}
+   * @throws {Error} When file change handling fails
+   */
   private handleFileChange: FileHandler = async (filepath: string): Promise<void> => {
     console.warn(`File ${filepath} has been changed`);
 
@@ -71,6 +96,10 @@ export class ProjectWatcher {
     }
   };
 
+  /**
+   * Sets up file system watchers with event handlers.
+   * @private
+   */
   private setupWatchers(): void {
     this.watcher
       .on('change', this.handleFileChange)

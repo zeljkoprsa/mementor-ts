@@ -2,6 +2,14 @@ import fs from 'fs/promises';
 import path from 'path';
 import { ContextSnapshot, ProjectConfig } from '../types';
 
+/**
+ * Updates documentation based on changes in a source file.
+ * @async
+ * @param {string} filepath - Path to the changed file
+ * @param {ContextSnapshot} snapshot - Current documentation snapshot
+ * @param {ProjectConfig} config - Project configuration
+ * @throws {Error} When documentation update fails
+ */
 export async function updateDocumentation(
   filepath: string,
   snapshot: ContextSnapshot,
@@ -37,6 +45,11 @@ export async function updateDocumentation(
   }
 }
 
+/**
+ * Determines the type of documentation needed based on file location.
+ * @param {string} filepath - Path to the file
+ * @returns {string} The document type ('component', 'hook', 'util', or 'other')
+ */
 function getDocumentationType(filepath: string): string {
   if (filepath.includes('/components/')) return 'component';
   if (filepath.includes('/hooks/')) return 'hook';
@@ -44,6 +57,13 @@ function getDocumentationType(filepath: string): string {
   return 'other';
 }
 
+/**
+ * Updates documentation for a component.
+ * @async
+ * @param {string} _filepath - Path to the component file
+ * @param {string} _content - Content of the component file
+ * @param {ProjectConfig} _config - Project configuration
+ */
 async function updateComponentDocs(
   _filepath: string,
   _content: string,
@@ -58,6 +78,13 @@ async function updateComponentDocs(
   await updateComponentSection(devDocsPath, componentName, componentDoc);
 }
 
+/**
+ * Updates documentation for a React hook.
+ * @async
+ * @param {string} _filepath - Path to the hook file
+ * @param {string} _content - Content of the hook file
+ * @param {ProjectConfig} _config - Project configuration
+ */
 async function updateHookDocs(
   _filepath: string,
   _content: string,
@@ -66,6 +93,13 @@ async function updateHookDocs(
   // Similar to component docs but for hooks
 }
 
+/**
+ * Updates documentation for a utility function.
+ * @async
+ * @param {string} _filepath - Path to the utility file
+ * @param {string} _content - Content of the utility file
+ * @param {ProjectConfig} _config - Project configuration
+ */
 async function updateUtilDocs(
   _filepath: string,
   _content: string,
@@ -74,6 +108,13 @@ async function updateUtilDocs(
   // Similar to component docs but for utilities
 }
 
+/**
+ * Updates the changelog with new changes.
+ * @async
+ * @param {string} filepath - Path to the changed file
+ * @param {ContextSnapshot} snapshot - Current documentation snapshot
+ * @param {ProjectConfig} config - Project configuration
+ */
 async function updateChangelog(
   filepath: string,
   snapshot: ContextSnapshot,
@@ -88,6 +129,11 @@ async function updateChangelog(
   await fs.writeFile(changelogPath, updatedChangelog, 'utf-8');
 }
 
+/**
+ * Extracts documentation from a component's content.
+ * @param {string} content - Component file content
+ * @returns {string} Extracted documentation
+ */
 function extractComponentDoc(content: string): string {
   // Extract JSDoc comments and TypeScript interfaces
   const docRegex = /\/\*\*[\s\S]*?\*\//g;
@@ -96,6 +142,13 @@ function extractComponentDoc(content: string): string {
   return docs.join('\n\n');
 }
 
+/**
+ * Updates the component section in the development documentation.
+ * @async
+ * @param {string} devDocsPath - Path to development documentation
+ * @param {string} componentName - Name of the component
+ * @param {string} componentDoc - Component documentation
+ */
 async function updateComponentSection(
   devDocsPath: string,
   componentName: string,
@@ -115,6 +168,12 @@ async function updateComponentSection(
   await fs.writeFile(devDocsPath, updatedDocs, 'utf-8');
 }
 
+/**
+ * Adds unreleased changes to the changelog.
+ * @param {string} changelog - Current changelog content
+ * @param {ContextSnapshot} snapshot - Current documentation snapshot
+ * @returns {string} Updated changelog content
+ */
 function addUnreleasedChanges(changelog: string, snapshot: ContextSnapshot): string {
   const lines = changelog.split('\n');
   const unreleasedIndex = lines.findIndex(line => line.includes('## [Unreleased]'));
@@ -129,6 +188,11 @@ function addUnreleasedChanges(changelog: string, snapshot: ContextSnapshot): str
   return lines.join('\n');
 }
 
+/**
+ * Formats changes into a readable string.
+ * @param {ContextSnapshot} snapshot - Current documentation snapshot
+ * @returns {string} Formatted changes string
+ */
 function formatChanges(snapshot: ContextSnapshot): string {
   return snapshot.changes.map(change => `- ${change.type}: ${change.description}`).join('\n');
 }

@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander';
+import { createAICommand } from './commands/ai';
 import { ProjectWatcher } from './core/watcher';
 import { handleSnapshotCommand } from './commands/snapshot';
 import { handleCleanupCommand } from './commands/cleanup';
@@ -125,5 +126,8 @@ program
       process.exit(1);
     }
   });
+
+// Add AI commands
+program.addCommand(createAICommand());
 
 program.parse();
